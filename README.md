@@ -1,18 +1,22 @@
-# 🚀 Custom Chrome New Tab Page
+# 🚀 Google PageEditor
 
-Una extensión para Google Chrome diseñada para transformar la página por defecto de nueva pestaña en un espacio completamente personalizable, limpio y adaptado a tu estilo de trabajo.
+**Google PageEditor** es una extensión para Google Chrome diseñada para transformar y personalizar por completo la página por defecto de nueva pestaña (*New Tab Page*), adaptándola a tu estilo visual y flujo de trabajo.
+
+---
 
 ## ✨ Características principales
 
-* 🎨 **Personalización visual:** Cambia fondos de pantalla, temas de color y estilos de interfaz.
-* 🔗 **Accesos directos:** Agrega, edita y organiza tus enlaces favoritos para un acceso rápido.
-* ⚡ **Ligera y rápida:** Cero código innecesario para asegurar que cada pestaña se abra al instante.
-* 🔒 **Privacidad garantizada:** Funciona de forma 100% local en tu navegador; no recopila ni envía datos personales.
+* 🎨 **Personalización completa:** Modifica el aspecto visual y la interfaz de tu nueva pestaña.
+* 🔗 **Accesos rápidos:** Organiza y gestiona tus enlaces frecuentes para mayor productividad.
+* ⚡ **Ligero y rápido:** Diseñado para abrir pestañas al instante sin consumo excesivo de recursos.
+* 🔒 **Privado y seguro:** Funciona localmente en tu navegador sin recopilar ni enviar datos.
+
+---
 
 ## 🛠️ Instalación para desarrollo
 
-Como la extensión aún no está en la Chrome Web Store, puedes instalarla manualmente:
+Puedes probar e instalar esta extensión manualmente siguiendo estos pasos:
 
 1. **Clona el repositorio:**
    ```bash
-   git clone [https://github.com/TU-USUARIO/TU-REPOSITO.git](https://github.com/TU-USUARIO/TU-REPOSITO.git)
+   git clone [https://github.com/davidjoedonealphabetgoog-bit/Google-PageEditor.git](https://github.com/davidjoedonealphabetgoog-bit/Google-PageEditor.git)
