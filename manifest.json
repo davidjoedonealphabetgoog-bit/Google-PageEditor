@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "Constructor Visual Chrome",
+  "version": "1.0",
+  "description": "Edita el HTML y diseño de tu Nueva Pestaña interactivamente.",
+  "permissions": ["storage"],
+  "chrome_url_overrides": {
+    "newtab": "constructor.html"
+  }
+}

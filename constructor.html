@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Nueva Pestaña Minimalista</title>
+  <style>
+    * { box-sizing: border-box; transition: background 0.3s ease, transform 0.2s ease; }
+    
+    body {
+      margin: 0; padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #1c1b1f; /* Fondo oscuro sutil estilo Chrome moderno */
+      color: #e6e1e5;
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+    }
+
+    /* SISTEMA DE CAPAS Y ANCLAJE LIMPIO */
+    body.modo-anclado #sidebar { transform: translateX(-340px); margin-left: -340px; }
+    body.modo-anclado .menu-elemento { display: none !important; }
+    body.modo-anclado .elemento-html { border: 1px solid transparent !important; background: transparent !important; cursor: default !important; }
+    body.modo-anclado .elemento-html:hover { transform: none !important; box-shadow: none !important; }
+
+    /* BARRA LATERAL ESTILO PANEL CHROME */
+    #sidebar {
+      width: 320px;
+      background: rgba(43, 41, 48, 0.8);
+      backdrop-filter: blur(20px);
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      z-index: 100;
+      overflow-y: auto;
+      transition: transform 0.4s cubic-bezier(0.05, 0.7, 0.1, 1), margin-left 0.4s cubic-bezier(0.05, 0.7, 0.1, 1);
+      box-shadow: 10px 0 30px rgba(0,0,0,0.2);
+    }
+    
+    #sidebar h3 { margin: 0; font-size: 14px; font-weight: 600; color: #d0bcff; text-transform: uppercase; letter-spacing: 1px; }
+
+    /* BOTÓN CONFIGURACIÓN EN LA ESQUINA (MINIMALISTA) */
+    #btn-editar-bloqueado {
+      position: fixed; bottom: 24px; right: 24px; z-index: 2000;
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #e6e1e5; width: 48px; height: 48px; border-radius: 50%;
+      font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    #btn-editar-bloqueado:hover { background: #d0bcff; color: #381e72; transform: scale(1.05) rotate(30deg); }
+
+    /* CUADRO INTELIGENCIA ARTIFICIAL M3 */
+    .contenedor-ia { display: flex; flex-direction: column; gap: 8px; }
+    .contenedor-ia textarea {
+      width: 100%; height: 70px; background: rgba(0, 0, 0, 0.2); color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 12px;
+      resize: none; outline: none; font-size: 13px; font-family: inherit;
+    }
+    .contenedor-ia textarea:focus { border-color: #d0bcff; }
+    .btn-ia {
+      background: #d0bcff; color: #381e72; border: none; padding: 10px;
+      border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 13px;
+    }
+    .btn-ia:hover { background: #e8def8; }
+
+    /* BOTONES DE BLOQUES RECTANGULARES LIMPIOS */
+    .bloques-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .bloque-disponible {
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+      padding: 12px; border-radius: 12px; cursor: grab; text-align: center; font-size: 13px; font-weight: 500;
+    }
+    .bloque-disponible:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); }
+    
+    .btn-accion { width: 100%; padding: 12px; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 13px; }
+    #btn-guardar { background: #381e72; color: #e8def8; border: 1px solid #4f378b; }
+    #btn-guardar:hover { background: #4f378b; }
+    #btn-limpiar { background: transparent; color: #f2b8b5; border: 1px solid rgba(242,184,181,0.3); }
+    #btn-limpiar:hover { background: rgba(242,184,181,0.1); }
+
+    /* LIENZO GENERAL */
+    #lienzo { flex-grow: 1; position: relative; background: #1c1b1f; }
+
+    /* COMPONENTES DENTRO DEL LIENZO (MODO EDICIÓN) */
+    .elemento-html {
+      position: absolute; padding: 6px; border-radius: 16px;
+      border: 1px dashed rgba(208, 188, 255, 0.4);
+      animation: aparecer 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .elemento-html:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+    @keyframes aparecer { from { opacity: 0; transform: scale(0.9) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+
+    /* MENÚ DEL ELEMENTO */
+    .menu-elemento { position: absolute; top: -14px; right: -14px; display: none; z-index: 500; }
+    .elemento-html:hover .menu-elemento { display: block; }
+    .btn-del {
+      background: #f2b8b5; color: #601410; border: none; width: 24px; height: 24px;
+      border-radius: 50%; cursor: pointer; font-size: 11px; font-weight: bold;
+      display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    /* ESTILOS DE BLOQUES COMPONENTES MINIMALISTAS */
+    .componente-titulo { font-size: 36px; font-weight: 400; letter-spacing: -0.5px; margin: 0; outline: none; color: #e6e1e5; }
+    
+    /* Buscador cilíndrico exacto a Chrome */
+    .componente-buscador input {
+      padding: 14px 24px; width: 480px; border-radius: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: #2b2930; color: #e6e1e5; outline: none; font-size: 16px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    .componente-buscador input:focus { background: #333138; border-color: rgba(255,255,255,0.2); box-shadow: 0 4px 12px rgba(0,0,0,0.25); }
+    
+    .componente-reloj { font-size: 64px; font-weight: 300; letter-spacing: -2px; color: #e6e1e5; font-variant-numeric: tabular-nums; }
+    
+    .componente-nota {
+      background: #2b2930; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px;
+      padding: 16px; width: 240px; height: 130px; color: #e6e1e5; resize: none; outline: none;
+      font-family: inherit; font-size: 14px; line-height: 1.5;
+    }
+    
+    .componente-clima {
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);
+      padding: 16px; border-radius: 20px; width: 140px; text-align: center;
+    }
+    .componente-clima h4 { margin: 0; font-size: 13px; font-weight: 500; color: #938f99; }
+    .componente-clima h2 { margin: 6px 0; font-size: 28px; font-weight: 300; color: #d0bcff; }
+    
+    .componente-contador {
+      background: #2b2930; padding: 12px 16px; border-radius: 16px; display: flex; align-items: center; gap: 12px;
+    }
+    .componente-contador button {
+      background: #4f378b; color: #e8def8; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-weight: 600;
+    }
+
+    .componente-frase { width: 260px; font-size: 15px; line-height: 1.6; color: #938f99; text-align: center; font-weight: 400; }
+    
+    .componente-canvas { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; cursor: crosshair; }
+  </style>
+</head>
+<body class="modo-anclado">
+
+  <!-- Icono de Engranaje Minimalista en la esquina -->
+  <button id="btn-editar-bloqueado">⚙️</button>
+
+  <div id="sidebar">
+    <h3>Generador Inteligente</h3>
+    <div class="contenedor-ia">
+      <textarea id="prompt-ia" placeholder="Ej: Crea una tarjeta oscura con bordes violetas y un texto elegante..."></textarea>
+      <button id="btn-ejecutar-ia" class="btn-ia">🪄 Compilar con IA</button>
+    </div>
+
+    <h3>Componentes</h3>
+    <div class="bloques-grid">
+      <div class="bloque-disponible" draggable="true" data-tipo="titulo">📝 Título</div>
+      <div class="bloque-disponible" draggable="true" data-tipo="buscador">🔍 Buscador</div>
+      <div class="bloque-disponible" draggable="true" data-tipo="reloj">⏰ Hora</div>
+      <div class="bloque-disponible" draggable="true" data-tipo="nota">📌 Nota</div>
+      <div class="bloque-disponible" draggable="true" data-tipo="clima">🌤️ Clima</div>
+      <div class="bloque-disponible" draggable="true" data-tipo="contador">🔢 Contador</div>
+      <div class="bloque-disponible" draggable="true" data-tipo="frase">💡 Frase</div>
+      <div class="bloque-disponible" draggable="true" data-tipo="dibujo">🎨 Boceto</div>
+    </div>
+
+    <hr style="border:0; border-top:1px solid rgba(255,255,255,0.08); margin:10px 0;">
+    <button id="btn-guardar" class="btn-accion">💾 Guardar Cambios</button>
+    <button id="btn-limpiar" class="btn-accion">🗑️ Resetear Lienzo</button>
+  </div>
+
+  <div id="lienzo"></div>
+
+  <script src="constructor.js"></script>
+</body>
+</html>
